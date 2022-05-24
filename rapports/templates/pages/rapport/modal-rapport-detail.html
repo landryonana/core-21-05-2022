@@ -1,0 +1,102 @@
+<div class="modal-header">
+    <h2 class="modal-title text-center" id="exampleModalLabel">Détail de {{mois}} {{annee}}</h2>
+    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+      <span aria-hidden="true">&times;</span>
+    </button>
+</div>
+
+<div class="modal-body">
+    <div class="wrapper-stat-evang">
+        <div class="wrapper-stat-evang-evangstatistq">
+            <div class="row myEl" id="row-modal">
+                {% for evg in modal_evang %}
+                    <div class="col-lg-4 col-sm-12 bder-modal-evang" id="pdf-modal-{{evg.evang.id}}">
+                        <h4>
+                            Jour : {{ evg.evang.day }}
+                            <i class=" fa fa-print capture " title="Avoir une capture" aria-hidden="true"></i>
+                        </h4>
+                        <h5>Site : {{ evg.evang.site }}</h5>
+
+                        <div class="header-model-rapport">
+                            <span class="line"></span>
+                            <h5>Participation des bosses</h5>
+                            <span class="line"></span>
+                        </div>
+                        <div class="evang_count">
+                            <ul>
+                                <li>Nombre d'homme : {{ evg.nbre_hommes }}</li>
+                                <li>Nombre de femme : {{ evg.nbre_femmes }}</li>
+                            </ul>
+                            <h5 style="color: #dc3545;">Total : {{ evg.nbre_participants }}</h5>
+                        </div>
+
+
+                        <div class="header-model-rapport">
+                            <span class="line"></span>
+                            <h5>Nombre de personnes touchées</h5>
+                            <span class="line"></span>
+                        </div>
+                        <div class="evang_count">
+                            <ul>
+                                <li>Nombre de oui : {{ evg.nbre_oui }}</li>
+                                <li>Nombre de déjà : {{ evg.nbre_dja }}</li>
+                                <li>Nombre de non : {{ evg.nbre_non }}</li>
+                                <li>Nombre d'indéci : {{ evg.nbre_ras }}</li>
+                            </ul>
+                            <h5 style="color: #dc3545;">Total : {{ evg.total }}</h5>
+                        </div>
+
+                    </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>    
+</div>
+
+<div class="modal-footer">
+    <button type="button" class="btn btn-danger btn-sm" data-dismiss="modal">Fermer</button>      
+</div>
+{% block script %}
+    <script>
+        var elt = '.btn-pdf-modal-';
+        var highest = null;
+        var idName= null;
+
+        var myEl = [...document.querySelectorAll('.bder-modal-evang')];
+        myEl.forEach(function(item) {
+          item.addEventListener('click', function() {
+            var temp = item.getAttribute('id');
+            var elt = '#'+temp;
+            createPdf(elt);
+          });
+        });
+
+
+        function createPdf(elt){
+            var HTML_Width = $(elt).width();
+            var HTML_Height = $(elt).height();
+            var top_left_margin = 15;
+            var PDF_Width = HTML_Width + (top_left_margin * 2);
+            var PDF_Height = (PDF_Width * 1.5) + (top_left_margin * 2);
+            var canvas_image_width = HTML_Width;
+            var canvas_image_height = HTML_Height;
+
+            var totalPDFPages = Math.ceil(HTML_Height / PDF_Height) - 1;
+            html2canvas($(elt)[0]).then(function (canvas) {
+                var imgData = canvas.toDataURL("image/png", 0.1);
+                var pdf = new jsPDF('p', 'pt', [PDF_Width, PDF_Height]);
+                pdf.addImage(imgData, 'JPG', top_left_margin, top_left_margin, canvas_image_width, canvas_image_height);
+                for (var i = 1; i <= totalPDFPages; i++) {
+                    pdf.addPage(PDF_Width, PDF_Height);
+                    pdf.addImage(imgData, 'JPG', top_left_margin, -(PDF_Height*i)+(top_left_margin*4),canvas_image_width,canvas_image_height);
+                }
+                var name = "detail"+Math.random() * 2022;
+                pdf.save(name+".pdf");
+            });
+        }
+
+
+    </script>
+{% endblock script %}
+
+

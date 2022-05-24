@@ -1,0 +1,92 @@
+{% extends 'base.html' %}
+
+{% block titre %}
+ASSEMBLE EAUX PAISIBLES | Evangélisations | comptes
+{% endblock titre %}
+
+{% block hamburger %}
+<div class="menu-btn">
+    <i class="fas fa-bars"></i>
+    <i class="fas fa-times"></i>
+</div>
+{% endblock hamburger %}
+
+{% block sidebar %}
+{% include 'layouts/_sidebar.html' %}
+{% endblock sidebar %}
+
+
+
+{% load static %}
+{% block content %}
+<div class="wrapper-head-liste">
+    <div class="head-liste">
+        <h2>Détails du compte de <b class="user-deco">{{ user.username }}</b></h2>
+        <h4>Comptes</h4>
+    </div>
+</div>
+<div class="wrapper-liste">
+    <div class="row">
+        <div class="col-md-3">
+            {% include 'partials/user-side-bar-link.html' %}
+        </div>
+        <div class="col-md-9">
+            <div class="wrapper-user">
+                <div class="row">
+                    <div class="wrap-ud-btn">
+                        <div class="ud-btn">
+                            {% if request.user == user %}
+                                <a href="{% url 'user_edit' %}" class="btn btn-primary btn-sm">Modifier</a>    
+                                <a href="{% url 'password_change' %}" class="btn btn-secondary btn-sm">
+                                    Changer votre mot de passe
+                                </a>    
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-4">
+                        <div class="user-profile-image">
+                            {% if user.profile.image  %}
+                                <a href="{% if request.user == user %}{% url 'user_edit' %}{% endif %}">
+                                    <img src="{{ user.profile.image.url }}" alt="{{ user.username }}">
+                                </a>
+                            {% else %}
+                                <img src="{% static 'images_root/logo/vh-yde.jpg' %}" alt="">
+                            {% endif %}
+                        </div>
+                    </div>
+                    <div class="col-md-8">
+                        <div class="user-profile-info">
+                            <ul class="list-group list-group-flush">
+                                <li class="list-group-item">
+                                    <b>nom et prénom :</b>
+                                    <p>{{user.username}}</p>
+                                </li>
+                                <li class="list-group-item">
+                                    <b>email :</b>
+                                    <p>{{user.email}}</p>
+                                </li>
+                                <li class="list-group-item">
+                                    <b>télephone :</b>
+                                    {% if user.profile.phone %}
+                                        <p>{{user.profile.phone}}</p>
+                                    {% else %}
+                                        <p>----</p>
+                                    {% endif %}
+                                </li>
+                                <li class="list-group-item">
+                                    <b>sexe :</b>
+                                     <p>{{user.profile.sexe}}</p>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock content %}
+

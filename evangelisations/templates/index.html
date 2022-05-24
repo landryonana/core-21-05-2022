@@ -1,0 +1,167 @@
+{% extends 'base.html' %}
+
+
+
+{% block titre %}
+ASSEMBLE EAUX PAISIBLES | Evangélisations
+{% endblock titre %}
+
+
+
+{% block hamburger %}
+    <div class="menu-btn">
+        <i class="fas fa-bars"></i>
+        <i class="fas fa-times"></i>
+    </div>
+{% endblock hamburger %}
+
+
+
+{% block sidebar %}
+    {% include 'layouts/_sidebar.html' %}
+{% endblock sidebar %}
+
+
+
+{% block content %}
+<div class="home">
+
+    <div class="wrapper-evang">
+        <div class="row">
+            <div class="col-md-6 padd-card-right">
+                <div class="card">
+                  <div class="card-header" style="background: #006c69;">
+                    <form action="{% url 'evangelisation:evangelisation_app_index' %}">
+                        <div class="form-group pd-evang-form">
+                            <label for="liste-evang">
+                                <b style="color:#fff;">Voir un moment d'évangelisation </b>
+                            </label>
+                            <select onchange="form.submit()" name="liste-evang" id="liste-evang" class="form-control">
+                                {% for evg in evangs %}
+                                    <option
+                                    {% if evang_first.id == evg.id %}
+                                        selected="true"
+                                    {% endif %}
+                                        value="{{evg.id}}">{{evg}}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                    </form>
+                  </div>
+                  <ul class="list-group list-group-flush">
+                    <li class="list-group-item">
+                        <b>Évangélisation du :</b>
+                        {% if evang_first.day %}
+                            <p style="color:#006c69;display:inline">
+                                {{ evang_first.day|date:"d/m/y"  }}
+                            </p>
+                        {% else %}
+                            <p style="color:red;display:inline">pas de données</p>
+                        {% endif %}
+                    </li>
+                    <li class="list-group-item">
+                        <b>Lieu :</b>
+                        {% if evang_first.site %}
+                            <p style="color:#006c69;display:inline">
+                                {{ evang_first.site }}
+                            </p>
+                        {% else %}
+                            <p style="color:red;display:inline">pas de données</p>
+                        {% endif %}
+                    </li>
+                    <li class="list-group-item">
+                        <b>Heure de début :</b>
+                        {% if evang_first.heure_de_debut%}
+                            <p style="color:#006c69;display:inline">
+                                {{ evang_first.heure_de_debut|time:'H:i' }}
+                            </p>
+                        {% else %}
+                            <p style="color:red;display:inline">pas de données</p>
+                        {% endif %}
+                    </li>
+                    <li class="list-group-item">
+                        <b>Heure de fin :</b>
+                        {% if evang_first.heure_de_fin %}
+                            <p style="color:#006c69;display:inline">
+                                {{ evang_first.heure_de_fin|time:'H:i' }}
+                            </p>
+                        {% else %}
+                            <p style="color:red;display:inline">pas de données</p>
+                        {% endif %}
+                    </li>
+                    <li class="list-group-item">
+                        <b>Durée :</b>
+                        {% if evang_first.dure %}
+                            <p style="color:#006c69;display:inline">
+                                {{ evang_first.dure }}
+                            </p>
+                        {% else %}
+                            <p style="color:red;display:inline">pas de données</p>
+                        {% endif %}
+                    </li>
+                  </ul>
+                </div>
+            </div>
+            <div class="col-md-6 padd-card-left padd-card-top">
+                <div class="card">
+                  <div class="card-header" style="background: #006c69;">
+                    <h2>
+                        <b style="color:#fff;">Liste des présents</b>
+                        {% if evang_first.boss.count %}
+                            <b style="color: #d4ad14;">( {{evang_first.boss.count}} présent(s) )</b>
+                        {% endif %}
+                    </h2>
+                  </div>
+                  <div class="rempl" {% if evang_first.boss.count > 0 %}style="height: 271px;overflow: auto;"{% endif %}>
+                        <div class="table-responsive tab-elmt scroll-tab-elmt-evang-boss">
+                            <table class="table table-hover" id="table-evang">
+                                <thead>
+                                    <tr>
+                                        <th scope="col" rowspan="2">#</th>
+                                        <th scope="col" rowspan="2">Nom et Prenom</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for boss in evang_first.boss.all %}
+                                        <tr>
+                                            <th scope="row">{{ forloop.counter }}</th>
+                                            <td>{{ boss.nom_et_prenom }}</td>
+                                        </tr>
+                                    {% empty %}
+                                        <tr>
+                                            <th scope="row"></th>
+                                            <td style="color:red;">pas de données pour le moment</td>
+                                        </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="wrapper-tabl-evang">
+        <h2>Personnes évangelisés le {{evang_first.day|date:"d/m/y"}}
+            {% if evang_first.personnes.count > 0 %}
+                <b style="color: #d4ad14;">avec {{ evang_first.personnes.count }} personne(s)</b>
+            {% endif %}
+        </h2>
+        <!--<div class="wrapper-zoom">
+            <b>Zoom : </b>
+            <div class="btn-zoom">
+                <button id="btn-zoom-plus"
+                type="button" 
+                class="btn btn-default btn-sm">
+                +
+                </button>
+                <button id="btn-zoom-moins"
+                type="button"
+                class="btn btn-default btn-sm">-</button>
+            </div>
+        </div>-->
+        {% include 'table-index.html' %}
+    </div>
+</div>
+{% endblock content %}
